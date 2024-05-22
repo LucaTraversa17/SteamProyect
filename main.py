@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
+import uvicorn 
 
 app = FastAPI()
 
@@ -24,13 +25,9 @@ class DeveloperRequest(BaseModel):
     developer: str
 
 @app.post("/estadisticas/")
-async def get_estadisticas(request: DeveloperRequest):
-    try:
-        estadisticas = calcular_estadisticas_por_desarrollador(request.developer)
-        return estadisticas.to_dict(orient="index")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def get_estadisticas_por_desarrollador(request: DeveloperRequest):
+    estadisticas = calcular_estadisticas_por_desarrollador(request.developer)
+    if estadisticas is None:
+        raise HTTPException(status_code=404, detail="Developer not found")
+    return estadisticas.to_dict()
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
