@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import pandas as pd
 import uvicorn 
 from fastapi.responses import RedirectResponse
+from collections import defaultdict
 
 app = FastAPI()
 
@@ -10,38 +11,44 @@ app = FastAPI()
 def developer_stats(desarrollador):
     df_juegos = pd.read_parquet('df_consulta_free.parquet')
     df_juegos = df_juegos[df_juegos['developer'] == desarrollador]
-    total_items_por_anio = df_juegos.groupby('release_date')['app_name'].count()
-    items_gratuitos_por_anio = df_juegos[df_juegos['price'] == 0].groupby('release_date')['app_name'].count()
-    estadisticas = pd.DataFrame({
-        'Cantidad Gratuitos': items_gratuitos_por_anio,
-        'Cantidad Total': total_items_por_anio,
-        'Porcentaje Gratuito': (items_gratuitos_por_anio / total_items_por_anio) * 100
-    })
-    estadisticas = estadisticas.fillna(0)
-    estadisticas = estadisticas.rename_axis(index={'release_date': 'Año'})
+    
+    total_items_por_anio = defaultdict(int)
+    items_gratuitos_por_anio = defaultdict(int)
+    
+    for _, row in df_juegos.iterrows():
+        anio = row['release_date']
+        total_items_por_anio[anio] += 1
+        if row['price'] == 0:
+            items_gratuitos_por_anio[anio] += 1
+    
+    estadisticas = {}
+    for anio in total_items_por_anio:
+        cantidad_total = total_items_por_anio[anio]
+        cantidad_gratuitos = items_gratuitos_por_anio[anio]
+        porcentaje_gratuito = (cantidad_gratuitos / cantidad_total) * 100
+        estadisticas[anio] = {
+            'Cantidad Gratuitos': cantidad_gratuitos,
+            'Cantidad Total': cantidad_total,
+            'Porcentaje Gratuito': porcentaje_gratuito
+        }
+    
     return estadisticas
 
 def user_statistics(user_id):
-    df_gasto_usuario = pd.read_parquet('df_consulta_gasto_usuario.parquet')
+    df = pd.read_parquet('df_consulta_gasto_usuario.parquet')
     # Filtrar el DataFrame para el usuario dado
     df = df[df['user_id'] == user_id]
-    if df.empty:
-        return {
-            'user_id': user_id,
-            'total_spent': 0.0,
-            'recommendation_rate': 0.0,
-            'item_count': 0
-        }
     # Calcular las métricas
     total_spent = df['price'].sum()
     recommendation_rate = df['recommend'].mean() * 100
     item_count = df['item_id'].count()
-    return {
+    resultado = {
         'Usuario': user_id,
         'Monto Gastado': f'USD:${round(total_spent,2)}',
         'Ratio de recomendacion': f"{round(recommendation_rate,2)}%",
         'Items comprados': int(item_count)
     }
+    return resultado
 
 
 def estadistica_genero(genero):
@@ -58,17 +65,20 @@ def estadistica_genero(genero):
         tiempo = row['playtime_forever']
 
         resultado[año] = tiempo
+    resultado = {f"El usuario que más jugó al género {genero} fue {usuario}": [resultado]}
 
-    return {f"El usuario que más jugó al género {genero} fue {usuario}": [resultado]}
+    return resultado
 
-def best_developer_year(año: int):
+def best_developer_year(año: int) -> dict:
     df = pd.read_parquet('df_consulta_positivo_desarrollador.parquet')
+    # Filtrar por el año especificado
     df = df[df['year'] == año]
+    # Agrupar por año y desarrollador, y contar los juegos
     df = df.groupby(['year', 'developer']).size().reset_index(name='count').sort_values(by='count', ascending=False)
+    # Seleccionar los tres mejores desarrolladores
     df = df.iloc[:3, :2].reset_index(drop=True)
-    result = []
-    for idx, row in df.iterrows():
-        result.append({f"Puesto {idx + 1}": row['developer']})
+    # Crear el diccionario de resultados
+    result = {f"Puesto {idx + 1}": row['developer'] for idx, row in df.iterrows()}
     return result
 
 def developer_reviews_analysis(desarrolladora: str):
@@ -99,36 +109,37 @@ class DeveloperNameRequest(BaseModel):
 
 # Definir los endpoints
 @app.post("/estadisticas/developer/")
-def developer(request: DeveloperRequest):
+async def developer(request: DeveloperRequest):
     estadisticas = developer_stats(request.developer)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Developer not found")
     return estadisticas.to_dict()
 
 @app.post("/estadisticas/user/")
-def user(request: UserRequest):
+async def user(request: UserRequest):
     estadisticas = user_statistics(request.user_id)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="User not found")
     return estadisticas
 
 @app.post("/estadisticas/genero/")
-def genero(request: GenreRequest):
+async def genero(request: GenreRequest):
     estadisticas = estadistica_genero(request.genre)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Genre not found")
     return estadisticas
 
 @app.post("/estadisticas/best_developer_year/")
-def best_developer(request: YearRequest):
+async def best_developer(request: YearRequest):
     estadisticas = best_developer_year(request.year)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Year not found")
     return estadisticas
 
 @app.post("/estadisticas/developer_reviews/")
-def developer_reviews(request: DeveloperNameRequest):
+async def developer_reviews(request: DeveloperNameRequest):
     estadisticas = developer_reviews_analysis(request.developer)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Developer not found")
     return estadisticas
+
