@@ -10,10 +10,10 @@ try:
     df_juegoss = pd.read_parquet('df_consulta_free.parquet')
     df_gasto_usuario = pd.read_parquet('df_consulta_gasto_usuario.parquet')
     df_genero = pd.read_parquet('df_consulta_genero.parquet')
-    df_recomendaciones = pd.read_parquet('df_consulta_positivo_desarrollador.parquet')
-    df_reviews = pd.read_parquet('df_consulta_sentimientos_desarrollador.parquet')
+    df_recomendaciones = pd.read_parquet('df_consulta_recomendaciones.parquet')
+    df_reviews = pd.read_parquet('df_consulta_reviews.parquet')
 except Exception as e:
-    raise '(status_code=500, detail=f"Error loading Parquet files: {str(e)}")'
+    raise HTTPException(status_code=500, detail=f"Error loading Parquet files: {str(e)}")
 
 # Definir las funciones de estadísticas
 def developer_stats(desarrollador):
@@ -149,3 +149,5 @@ def read_root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+#uvicorn main:app --host 0.0.0.0 --port 8000
