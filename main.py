@@ -6,13 +6,21 @@ from fastapi.responses import RedirectResponse
 
 app = FastAPI()
 
+try:
+    df_juegoss = pd.read_parquet('df_consulta_free.parquet')
+    df_gasto_usuario = pd.read_parquet('df_consulta_gasto_usuario.parquet')
+    df_genero = pd.read_parquet('df_consulta_genero.parquet')
+    df_recomendaciones = pd.read_parquet('df_consulta_positivo_desarrollador.parquet')
+    df_reviews = pd.read_parquet('df_consulta_sentimientos_desarrollador.parquet')
+except Exception as e:
+    raise '(status_code=500, detail=f"Error loading Parquet files: {str(e)}")'
 
 # Definir las funciones de estadísticas
 def developer_stats(desarrollador):
-    df_juegos = pd.read_parquet('df_consulta_free.parquet')
-    df_desarrollador = df_juegos[df_juegos['developer'] == desarrollador]
-    total_items_por_anio = df_desarrollador.groupby('release_date')['app_name'].count()
-    items_gratuitos_por_anio = df_desarrollador[df_desarrollador['price'] == 0].groupby('release_date')['app_name'].count()
+    df_juegos = df_juegoss
+    df_juegos = df_juegos[df_juegos['developer'] == desarrollador]
+    total_items_por_anio = df_juegos.groupby('release_date')['app_name'].count()
+    items_gratuitos_por_anio = df_juegos[df_juegos['price'] == 0].groupby('release_date')['app_name'].count()
     estadisticas = pd.DataFrame({
         'Cantidad Gratuitos': items_gratuitos_por_anio,
         'Cantidad Total': total_items_por_anio,
@@ -23,7 +31,7 @@ def developer_stats(desarrollador):
     return estadisticas
 
 def user_statistics(user_id):
-    df = pd.read_parquet('df_consulta_gasto_usuario.parquet')
+    df = df_gasto_usuario
     # Filtrar el DataFrame para el usuario dado
     df = df[df['user_id'] == user_id]
     if df.empty:
@@ -46,7 +54,7 @@ def user_statistics(user_id):
 
 
 def estadistica_genero(genero):
-    df = pd.read_parquet('df_consulta_genero.parquet')
+    df = df_genero
     df = df[df['genres'].isin([genero])]
     usuario = df.groupby('user_id')['playtime_forever'].sum().idxmax()
     df= df[df['user_id']==usuario]
@@ -63,7 +71,7 @@ def estadistica_genero(genero):
     return {f"El usuario que más jugó al género {genero} fue {usuario}": [resultado]}
 
 def best_developer_year(año: int):
-    df = pd.read_parquet('df_consulta_positivo_desarrollador.parquet')
+    df = df_recomendaciones
     df = df[df['year'] == año]
     df = df.groupby(['year', 'developer']).size().reset_index(name='count').sort_values(by='count', ascending=False)
     df = df.iloc[:3, :2].reset_index(drop=True)
@@ -73,7 +81,7 @@ def best_developer_year(año: int):
     return result
 
 def developer_reviews_analysis(desarrolladora: str):
-    df = pd.read_parquet('df_consulta_sentimientos_desarrollador.parquet')
+    df = df_reviews
     df = df[df['developer'] == desarrolladora]
     count_2 = (df['sentiment'] == 2).sum()
     count_0 = (df['sentiment'] == 0).sum()
