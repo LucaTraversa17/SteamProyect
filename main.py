@@ -134,4 +134,10 @@ def developer_reviews(request: DeveloperNameRequest):
         raise HTTPException(status_code=404, detail="Developer not found")
     return estadisticas
 
+# Redirigir automáticamente a /docs
+@app.get("/", include_in_schema=False)
+def read_root():
+    return RedirectResponse(url="/docs")
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
