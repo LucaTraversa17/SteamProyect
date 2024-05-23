@@ -3,36 +3,14 @@ from pydantic import BaseModel
 import pandas as pd
 import uvicorn 
 from fastapi.responses import RedirectResponse
-from collections import defaultdict
 
 app = FastAPI()
 
 # Definir las funciones de estadísticas
 def developer_stats(desarrollador):
     df_juegos = pd.read_parquet('df_consulta_free.parquet')
-    df_juegos = df_juegos[df_juegos['developer'] == desarrollador]
-    
-    total_items_por_anio = defaultdict(int)
-    items_gratuitos_por_anio = defaultdict(int)
-    
-    for _, row in df_juegos.iterrows():
-        anio = row['release_date']
-        total_items_por_anio[anio] += 1
-        if row['price'] == 0:
-            items_gratuitos_por_anio[anio] += 1
-    
-    estadisticas = {}
-    for anio in total_items_por_anio:
-        cantidad_total = total_items_por_anio[anio]
-        cantidad_gratuitos = items_gratuitos_por_anio[anio]
-        porcentaje_gratuito = (cantidad_gratuitos / cantidad_total) * 100
-        estadisticas[anio] = {
-            'Cantidad Gratuitos': cantidad_gratuitos,
-            'Cantidad Total': cantidad_total,
-            'Porcentaje Gratuito': porcentaje_gratuito
-        }
-    
-    return estadisticas
+    #volver a hacerla
+    return df_juegos
 
 def user_statistics(user_id):
     df = pd.read_parquet('df_consulta_gasto_usuario.parquet')
