@@ -8,9 +8,16 @@ app = FastAPI()
 
 # Definir las funciones de estadísticas
 def developer_stats(desarrollador):
-    df_juegos = pd.read_parquet('df_consulta_free.parquet')
-    #volver a hacerla
-    return df_juegos
+    df = pd.read_parquet('df_consulta_free.parquet')
+    df = df[df['developer']== desarrollador]
+    counts = df.groupby('release_date').agg(
+    total_values=pd.NamedAgg(column='price', aggfunc='size'),
+    free_values=pd.NamedAgg(column='price', aggfunc=lambda x: (x == 0).sum())
+    )
+    counts['percentage_free'] = round((counts['free_values'] / counts['total_values']) * 100,2)
+    counts = counts.to_dict()
+    return counts
+
 
 def user_statistics(user_id):
     df = pd.read_parquet('df_consulta_gasto_usuario.parquet')
@@ -90,7 +97,7 @@ async def developer(developer: str):
     estadisticas = developer_stats(developer)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Developer not found")
-    return estadisticas.to_dict()
+    return estadisticas
 
 @app.get("/estadisticas/user/")
 async def user(user_id: str):
