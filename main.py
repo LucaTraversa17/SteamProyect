@@ -85,39 +85,41 @@ class YearRequest(BaseModel):
 class DeveloperNameRequest(BaseModel):
     developer: str
 
-# Definir los endpoints
-@app.post("/estadisticas/developer/")
-async def developer(request: DeveloperRequest):
-    estadisticas = developer_stats(request.developer)
+@app.get("/estadisticas/developer/")
+async def developer(developer: str):
+    estadisticas = developer_stats(developer)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Developer not found")
     return estadisticas.to_dict()
 
-@app.post("/estadisticas/user/")
-async def user(request: UserRequest):
-    estadisticas = user_statistics(request.user_id)
+@app.get("/estadisticas/user/")
+async def user(user_id: str):
+    estadisticas = user_statistics(user_id)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="User not found")
     return estadisticas
 
-@app.post("/estadisticas/genero/")
-async def genero(request: GenreRequest):
-    estadisticas = estadistica_genero(request.genre)
+# Definir los endpoints utilizando GET
+@app.get("/estadisticas/genero/")
+async def genero(genre: str):
+    estadisticas = estadistica_genero(genre)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Genre not found")
     return estadisticas
 
-@app.post("/estadisticas/best_developer_year/")
-async def best_developer(request: YearRequest):
-    estadisticas = best_developer_year(request.year)
+@app.get("/estadisticas/best_developer_year/")
+async def best_developer(year: int):
+    estadisticas = best_developer_year(year)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Year not found")
     return estadisticas
 
-@app.post("/estadisticas/developer_reviews/")
-async def developer_reviews(request: DeveloperNameRequest):
-    estadisticas = developer_reviews_analysis(request.developer)
+@app.get("/estadisticas/developer_reviews/")
+async def developer_reviews(developer: str):
+    estadisticas = developer_reviews_analysis(developer)
     if estadisticas is None:
         raise HTTPException(status_code=404, detail="Developer not found")
     return estadisticas
+
+
 
