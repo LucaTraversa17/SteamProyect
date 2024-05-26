@@ -3,6 +3,8 @@ from pydantic import BaseModel
 import pandas as pd
 import uvicorn 
 from fastapi.responses import RedirectResponse
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = FastAPI()
 
@@ -76,6 +78,21 @@ def developer_reviews_analysis(desarrolladora: str):
     }
     return resultado
 
+def get_recommendations(item_id):
+    df = pd.read_parquet('df_consulta_final')
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(df['combined_features'])
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    idx = df.index[df['item_id'] == item_id].tolist()[0]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:6]  # Get top 5 recommendations
+    game_indices = [i[0] for i in sim_scores]
+    resultado = df['app_name'].iloc[game_indices].reset_index(drop=True)
+    resultado.index += 1  # Cambia el índice para que empiece en 1
+    resultado = resultado.to_dict()
+    return resultado
+
 # Definir las clases de solicitud
 class DeveloperRequest(BaseModel):
     developer: str
@@ -89,8 +106,8 @@ class GenreRequest(BaseModel):
 class YearRequest(BaseModel):
     year: int
 
-class DeveloperNameRequest(BaseModel):
-    developer: str
+class Item_id(BaseModel):
+    item: int
 
 @app.get("/estadisticas/developer/")
 async def developer(developer: str):
@@ -128,5 +145,10 @@ async def developer_reviews(developer: str):
         raise HTTPException(status_code=404, detail="Developer not found")
     return estadisticas
 
-
+@app.get("/estadisticas/recomendacion/")
+async def recomendacion(item: int):
+    recomendacion = get_recommendations(item)
+    if recomendacion is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return recomendacion
 
