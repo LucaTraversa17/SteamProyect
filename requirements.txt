@@ -3,3 +3,4 @@ uvicorn
 pandas
 pydantic
 pyarrow
+sklearn
