@@ -79,7 +79,7 @@ def developer_reviews_analysis(desarrolladora: str):
     return resultado
 
 def get_recommendations(item_id):
-    df = pd.read_parquet('df_consulta_final')
+    df = pd.read_parquet('df_consulta_final.parquet')
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(df['combined_features'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
