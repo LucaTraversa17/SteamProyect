@@ -50,5 +50,7 @@ El proyecto se llevo a cabo con Python y las siguientes librerías (con sus apli
 
 ## Contacto
 Luca Traversa 
+
 Data Engineer
+
 [LinkedIn](https://www.linkedin.com/in/luca-traversa-3368b41a4/)
