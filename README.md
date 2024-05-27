@@ -1,14 +1,16 @@
 # SteamProyect
 ## Contexto
-Hemos recibido 3 Datasets de la empresa Steam que nos encargó llevar a cabo una serie de análisis para evaluar distintas métricas de sus productos. Las fases del proceso que debemos llevar a cabo son las siguientes:
+Hemos recibido [3 Datasets](https://drive.google.com/drive/folders/1HqBG2-sUkz_R3h1dZU5F2uAzpRn7BSpj?pli=1) de la empresa Steam que nos encargó llevar a cabo una serie de análisis para evaluar distintas métricas de sus productos. Debido a la limitación de tiempo y recursos, llevaremos a cabo un MVP (Minimum Viable Product) para analizar las métricas. 
 
-En primer lugar deberemos realizar un ETL de los archivos. Como hemos mencionado tenemos tres archivos que nos brindarán distinta información. Sin embargo, estos archivos no están guardados de manera correcta y por lo tanto deberemos llevaer a cabo una adecuada descompresión y limpieza de los mismos. 
+Las fases del proceso que debemos llevar a cabo son las siguientes:
 
-En segundo lugar, una vez que tengamos los archivos correctamente legibles, generaremos un Dataset con la información que va a requerir cada función. Este proceso también implicará un proceso de EDA ya que deberemos decidir qué hacemos con los campos nulos y con los campos duplicados por ejemplo. La creación de Datasets para cada función nos proporcionará mayor eficiencia computacional ya que eliminaríamos la información que no es relevante para cada función. 
+En primer lugar deberemos realizar un **ETL** de los archivos. Como hemos mencionado tenemos tres archivos que nos brindarán distinta información. Sin embargo, estos archivos no están guardados de manera correcta y por lo tanto deberemos llevaer a cabo una adecuada descompresión y limpieza de los mismos. 
 
-En tercer lugar, nos han solicitado generar un sistema de recomendación que aplique la similitud del coseno. Debremos crear una función que nos recomiende distintos productos según el producto que le introduzcamos como parámetro. Para es última función, la más importante del proyecto, también generaremos un Dataset específico con su correspondiente EDA y ETL.
+En segundo lugar, una vez que tengamos los archivos correctamente legibles, generaremos un Dataset con la información que va a requerir cada función. Este proceso también implicará un proceso de EDA ya que deberemos decidir qué hacemos con los campos nulos y con los campos duplicados por ejemplo. La creación de **Datasets para cada función** nos proporcionará mayor eficiencia computacional ya que eliminaríamos la información que no es relevante para cada función. 
 
-Finalmente, una vez que tengamos la funciones, generaremos una API con FastApi donde podamos consultar las mismas. Además se nos ha solicitado que deployemos en Render una versión online de nuestra API que pueda ser consumida desde cualquier lugar. Debido a las limitaciones de memoria y procesamiento de Render, tendremos que limitar el Dataset del sistema de recomendación para que pueda funcionar (más sobre este tema en el apartado de funciones). 
+En tercer lugar, nos han solicitado generar un **sistema de recomendación que aplique la similitud del coseno**. Debremos crear una función que nos recomiende distintos productos según el producto que le introduzcamos como parámetro. Para es última función, la más importante del proyecto, también generaremos un Dataset específico con su correspondiente EDA y ETL.
+
+Finalmente, una vez que tengamos la funciones, generaremos una **API con FastApi** donde podamos consultar las mismas. Además se nos ha solicitado que **deployemos en Render una versión online de nuestra API** que pueda ser consumida desde cualquier lugar. Debido a las limitaciones de memoria y procesamiento de Render, tendremos que limitar el Dataset del sistema de recomendación para que pueda funcionar (más sobre este tema en el apartado de funciones). 
 
 ### Organización del repositorio 
 
@@ -18,7 +20,8 @@ En el repositorio se podrán observar los siguientes archivos:
 * Archivo "EDA.ipynb" donde se lleva a cabo un análisis exploratorio para entender mejor los Datasets para las funciones. 
 * Archivo "main.py" que contiene la creación de la API con las funciones. Este archivo será consumido por Render para su deploy.
 * Archivo "requirements.txt" que Render utilizará para descargar las bibliotecas correspondientes para que la API funcione.
-* [Link al deploy de Render](https://streamproyect.onrender.com/docs) 
+* [Link al deploy de Render](https://streamproyect.onrender.com/docs)
+* [Link] a video explicativo del procesamiento de los Datos y la API. 
 
 ## Funciones 
 La API consta de 6 funciones:
@@ -35,3 +38,17 @@ La API consta de 6 funciones:
 *Para esta función se llevo a cabo un procesamiento de lenguaje natural sobre las reviews, asignandole un valor Negativo, Neutro o Positivo. Las valoraciones neutras no se contabilizaron para la función, únicamente las positivas o negativas. 
 
 **Debido a la gran cantidad de elementos del Dataset y la poca capacidad de procesamiento de Render, el sistema de recomendación se enfoca únicamente en los 4500 juegos más jugados de la plataforma. Entendemos que es un número significativo y relevante, eliminando los juegos que no son elegidos por los usuarios. 
+
+## Herramientas utilizadas
+El proyecto se llevo a cabo con Python y las siguientes librerías (con sus aplicaciones):
+* Fastapi: realización de la API.
+* Uvicorn: deployment de la API.
+* Pandas: Análisis de los datos y creación de los Datasets.
+* Pydantic: Creación de clases para la API.
+* Pyarrow: procesamiento de archivos parquet en render.
+* Sklearn: generación del modelo de recomendación por similitud del coseno.
+
+## Contacto
+Luca Traversa 
+Data Engineer
+[LinkedIn](https://www.linkedin.com/in/luca-traversa-3368b41a4/)
