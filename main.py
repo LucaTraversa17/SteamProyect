@@ -10,7 +10,7 @@ app = FastAPI()
 
 # Definir las funciones de estadísticas
 def developer_stats(desarrollador):
-    df = pd.read_parquet('df_consulta_free.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_free.parquet')
     df = df[df['developer']== desarrollador]
     counts = df.groupby('release_date').agg(
     total_values=pd.NamedAgg(column='price', aggfunc='size'),
@@ -22,7 +22,7 @@ def developer_stats(desarrollador):
 
 
 def user_statistics(user_id):
-    df = pd.read_parquet('df_consulta_gasto_usuario.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_gasto_usuario.parquet')
     # Filtrar el DataFrame para el usuario dado
     df = df[df['user_id'] == user_id]
     # Calcular las métricas
@@ -39,7 +39,7 @@ def user_statistics(user_id):
 
 
 def estadistica_genero(genero):
-    df = pd.read_parquet('df_consulta_genero.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_genero.parquet')
     df = df[df['genres'].isin([genero])]
     usuario = df.groupby('user_id')['playtime_forever'].sum().idxmax()
     df= df[df['user_id']==usuario]
@@ -57,7 +57,7 @@ def estadistica_genero(genero):
     return resultado
 
 def best_developer_year(año: int) -> dict:
-    df = pd.read_parquet('df_consulta_positivo_desarrollador.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_positivo_desarrollador.parquet')
     # Filtrar por el año especificado
     df = df[df['year'] == año]
     # Agrupar por año y desarrollador, y contar los juegos
@@ -69,7 +69,7 @@ def best_developer_year(año: int) -> dict:
     return result
 
 def developer_reviews_analysis(desarrolladora: str):
-    df = pd.read_parquet('df_consulta_sentimientos_desarrollador.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_sentimientos_desarrollador.parquet')
     df = df[df['developer'] == desarrolladora]
     count_2 = (df['sentiment'] == 2).sum()
     count_0 = (df['sentiment'] == 0).sum()
@@ -79,7 +79,7 @@ def developer_reviews_analysis(desarrolladora: str):
     return resultado
 
 def get_recommendations(item_id):
-    df = pd.read_parquet('df_consulta_final.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_final.parquet')
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(df['combined_features'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
