@@ -47,6 +47,7 @@ El proyecto se llevo a cabo con Python y las siguientes librerías (con sus apli
 * Pydantic: Creación de clases para la API.
 * Pyarrow: procesamiento de archivos parquet en render.
 * Sklearn: generación del modelo de recomendación por similitud del coseno.
+* Matplotlib & seaborn: Gráficos del EDA.
 
 ## Contacto
 Luca Traversa 
