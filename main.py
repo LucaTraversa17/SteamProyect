@@ -15,7 +15,7 @@ app = FastAPI()
 # Funcion N°1 estadisticas del desarrollador.
 def developer_statistics(desarrollador):
     #Leemos el Dataset previamente depurado
-    df = pd.read_parquet('df_consulta_free.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_free.parquet')
     #Nos quedamos unicamente con la información del desarrollador introducido. 
     df = df[df['developer']== desarrollador]
     #Calculamos los valores que nos interesan agrupados por año: titulos totales y titulos gratuitos
@@ -31,7 +31,7 @@ def developer_statistics(desarrollador):
 
 #Funcion N°2 estadisticas del usuario. 
 def user_statistics(user_id):
-    df = pd.read_parquet('df_consulta_gasto_usuario.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_gasto_usuario.parquet')
     # Filtrar el DataFrame para el usuario dado
     df = df[df['user_id'] == user_id]
     # Calcular las métricas del total gastado
@@ -51,7 +51,7 @@ def user_statistics(user_id):
 
 # Función N°3 estadísticas por género.
 def genre_statistics(genero):
-    df = pd.read_parquet('df_consulta_genero.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_genero.parquet')
     #Dataset unicamente del genero introducido. 
     df = df[df['genres'].isin([genero])]
     #Nos quedamos eon el usuario que más haya jugado a ese género, sumando las horas de playtime_forever.
@@ -72,7 +72,7 @@ def genre_statistics(genero):
 
 # Función N°4 estadísticas por año.
 def best_developer_year(año):
-    df = pd.read_parquet('df_consulta_positivo_desarrollador.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_positivo_desarrollador.parquet')
     # Filtrar por el año especificado
     df = df[df['year'] == año]
     # Agrupar por año y desarrollador, y contar los juegos
@@ -86,7 +86,7 @@ def best_developer_year(año):
 # Función N°5 reviews positivas y negativas por desarrollador.
 def developer_reviews_analysis(desarrolladora):
     #Creamos el dataset con la información del desarrollador
-    df = pd.read_parquet('df_consulta_sentimientos_desarrollador.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_sentimientos_desarrollador.parquet')
     df = df[df['developer'] == desarrolladora]
     #Contamos unicamente los puntaje 2 (positivo) y los 0 (negativo)
     count_2 = (df['sentiment'] == 2).sum()
@@ -98,7 +98,7 @@ def developer_reviews_analysis(desarrolladora):
 
 def get_recommendations(item_id):
     #Abrimos el Dataset. La columna mas importante es combined features que incluye todos los tags, specs y generos de cada juego. Sera la clave para el sistema de recomendación. 
-    df = pd.read_parquet('df_consulta_final.parquet')
+    df = pd.read_parquet('Datasets/df_consulta_final.parquet')
     #Creamos el sistema con la ayuda de la biblioteca sklearn. 
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(df['combined_features'])
