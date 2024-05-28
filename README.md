@@ -16,8 +16,8 @@ Finalmente, una vez que tengamos la funciones, generaremos una **API con FastApi
 
 En el repositorio se podrán observar los siguientes archivos:
 * Carpeta con los DataSets en formato parquet para su optimización. Son seis Datasets, uno para cada función.
-* Archivo "Exploración_Juegos.ipynb" en el cual se lleva a cabo el la descompresión de los Datasets originales, su análisis y la creación de los datasets finales.
-* Archivo "EDA.ipynb" donde se lleva a cabo un análisis exploratorio para entender mejor los Datasets para las funciones. 
+* Archivo "ETLs.ipynb" en el cual se lleva a cabo el la descompresión de los Datasets originales, su análisis y la creación de los datasets finales, incluye proceso de EDA para los datasets de las funciones de consulta.
+* Archivo "EDA.ipynb" donde se lleva a cabo un análisis exploratorio para entender el Dataset de la función de recomendación. 
 * Archivo "main.py" que contiene la creación de la API con las funciones. Este archivo será consumido por Render para su deploy.
 * Archivo "requirements.txt" que Render utilizará para descargar las bibliotecas correspondientes para que la API funcione.
 * [Link al deploy de Render](https://streamproyect.onrender.com/docs)
