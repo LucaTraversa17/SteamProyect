@@ -21,7 +21,7 @@ En el repositorio se podrán observar los siguientes archivos:
 * Archivo "main.py" que contiene la creación de la API con las funciones. Este archivo será consumido por Render para su deploy.
 * Archivo "requirements.txt" que Render utilizará para descargar las bibliotecas correspondientes para que la API funcione.
 * [Link al deploy de Render](https://streamproyect.onrender.com/docs)
-* [Link] a video explicativo del procesamiento de los Datos y la API. 
+* [Link](https://drive.google.com/file/d/1Iotl0F0BbnmhJt3S_j4HSCPqN6iN3s8-/view?usp=sharing) a video explicativo del procesamiento de los Datos y la API. 
 
 ## Funciones 
 La API consta de 6 funciones:
