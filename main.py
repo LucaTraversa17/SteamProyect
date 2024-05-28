@@ -19,7 +19,7 @@ def developer_statistics(desarrollador):
     #Nos quedamos unicamente con la información del desarrollador introducido. 
     df = df[df['developer']== desarrollador]
     if df.empty:
-        return None
+        abort(404)
     #Calculamos los valores que nos interesan agrupados por año: titulos totales y titulos gratuitos
     counts = df.groupby('release_date').agg(
     total_values=pd.NamedAgg(column='price', aggfunc='size'),
@@ -39,7 +39,7 @@ def user_statistics(user_id):
     # Filtrar el DataFrame para el usuario dado
     df = df[df['user_id'] == user_id]
     if df.empty:
-        return None
+        return HTTPException(status_code=404, detail="Developer not found")
     # Calcular las métricas del total gastado
     total_spent = df['price'].sum()
     #Porcentaje de recomendación.
