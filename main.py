@@ -60,6 +60,7 @@ def genre_statistics(genero):
     df= df[df['user_id']==usuario]
     #Agrupamos por año la cantidad de tiempo jugado.
     df = df.groupby('release_date')['playtime_forever'].sum().reset_index()
+    df['release_date'] = df['release_date'].astype(str)
     # Iterar sobre las variables y construir el diccionario
     resultado = {}
     for index, row in df.iterrows():
